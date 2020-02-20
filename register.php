@@ -1,13 +1,45 @@
 <?php 
 
+	include('config/db_connection.php');
+
 	$first_name = $last_name = $dob = $enrollment_date = $email = $home_phone = $mobile = '';
 	$contact_name_1 = $contact_phone_1 = $contact_name_2 = $contact_phone_2 = '';
 	$year = 0;
+
+	$id = 0;
 	
 	$errors = array('first_name' => '', 'last_name' => '', 'email' => '',  'dob' => '', 'enrollment_date' => '', 'year' => '',
 				 'contact_name_1' => '', 'contact_name_2' => '', 'contact_phone_1' => '', 'contact_phone_2' => '',
 				 'home_phone' => '', 'mobile' => '');
 	
+	if (isset($_GET['id'])) {
+		
+		$id = mysqli_real_escape_string($conn, $_GET['id']);
+		//build query
+		$sql = "SELECT * FROM students WHERE id = $id";
+		//get query result
+		$result = mysqli_query($conn, $sql);
+		//fetch result in an array
+		$student = mysqli_fetch_assoc($result);
+
+		mysqli_free_result($result);
+		mysqli_close($conn); 
+
+		$first_name = htmlspecialchars($student['first_name']);
+		$last_name = htmlspecialchars($student['last_name']);
+		$enrollment_date = htmlspecialchars($student['enrollment_date']);
+		$dob = htmlspecialchars($student['dob']);
+		$year = htmlspecialchars($student['year']);
+		$home_phone = htmlspecialchars($student['home_phone']);
+		$mobile = htmlspecialchars($student['mobile']);
+		$email = htmlspecialchars($student['email']);
+		$contact_phone_1 = htmlspecialchars($student['contact_phone_1']);
+		$contact_name_1 = htmlspecialchars($student['contact_name_1']);
+		$contact_name_2 = htmlspecialchars($student['contact_name_2']);
+		$contact_phone_2 = htmlspecialchars($student['contact_phone_2']);
+
+	}
+
 	if (isset($_POST['submit'])) {
 		
 		//check First Name
@@ -103,9 +135,44 @@
 			$contact_phone_2 = $_POST['contact_phone_2'];			
 		}
 
-
 		if (!array_filter($errors)) {
-			header('Location: index.php');
+
+			$id = mysqli_real_escape_string($conn, $_POST['student_id']);
+			$first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
+			$last_name = mysqli_real_escape_string($conn, $_POST['last_name']);
+			$enrollment_date = mysqli_real_escape_string($conn, $_POST['enrollment_date']);
+			$dob = mysqli_real_escape_string($conn, $_POST['dob']);
+			$year = mysqli_real_escape_string($conn, $_POST['year']);
+			$home_phone = mysqli_real_escape_string($conn, $_POST['home_phone']);
+			$mobile = mysqli_real_escape_string($conn, $_POST['mobile']);
+			$email = mysqli_real_escape_string($conn, $_POST['email']);
+			$contact_phone_1 = mysqli_real_escape_string($conn, $_POST['contact_phone_1']);
+			$contact_name_1 = mysqli_real_escape_string($conn, $_POST['contact_name_1']);
+			$contact_name_2 = mysqli_real_escape_string($conn, $_POST['contact_name_2']);
+			$contact_phone_2 = mysqli_real_escape_string($conn, $_POST['contact_phone_2']);
+
+			$sql = '';
+
+			if ($id > 0) {
+				//update sql query
+				$sql = "UPDATE students SET first_name = '$first_name' ,last_name = '$last_name',dob = '$dob',enrollment_date = '$enrollment_date'," .
+					"year = '$year',home_phone = '$home_phone',mobile = '$mobile',email = '$email',contact_name_1 = '$contact_name_1'," .
+					"contact_phone_1 = '$contact_phone_1',contact_name_2 = '$contact_name_2',contact_phone_2 = '$contact_phone_2' " .
+					"WHERE id = '$id'";
+			} else{
+				//insert sql query
+				$sql = "INSERTT INTO students(first_name,last_name,dob,enrollment_date,year,home_phone,mobile,email," .
+					"contact_name_1,contact_phone_1,contact_name_2,contact_phone_2) VALUES('$first_name', '$last_name', '$dob', '$enrollment_date'," . 
+					" '$year', '$home_phone', '$mobile', '$email', '$contact_name_1', '$contact_phone_1', '$contact_name_2', '$contact_phone_2')";
+			}
+			
+			//save to database
+			if(mysqli_query($conn, $sql)){
+				//redirect to index
+				header('Location: index.php');
+			}else{
+				echo 'Error saving data: ' . mysqli_error($conn);
+			}			
 		}
 	}
 
@@ -117,7 +184,7 @@
 	<?php include('templates/header.php'); ?>
 
 	<section class="container grey-text register-form-container">
-		<h4 class="center">Register New Student</h4>		
+		<h4 class="center header-text">Register New Student</h4>		
 			<div class="row">
 			    <form class="white col-s12 regiter-form" action="register.php" method="POST">
 			      <div class="row">
@@ -134,12 +201,12 @@
 			      </div>
 			      <div class="row">
 			        <div class="input-field col s4">
-			          <input id="dob" name="dob" type="date" class="validate">
+			          <input id="dob" name="dob" type="date" value="<?php echo htmlspecialchars($dob); ?>" class="validate">
 			          <label for="dob">Date of Birth</label>
 			          <div class="red-text"><?php echo $errors['dob']; ?></div>
 			        </div>
 			        <div class="input-field col s4">
-			          <input id="enrollment_date" name="enrollment_date" type="date" class="validate">
+			          <input id="enrollment_date" name="enrollment_date" value="<?php echo htmlspecialchars($enrollment_date); ?>" type="date" class="validate">
 			          <label for="enrollment_date">Date of Enrollment</label>
 			          <div class="red-text"><?php echo $errors['enrollment_date']; ?></div>
 			        </div>
@@ -194,6 +261,7 @@
 			      </div>
 			      <div class="row">
 			      	<div class="input-field col s12">
+			      	  <input type="hidden" name="student_id" value="<?php echo $id; ?>">
 			          <input name="submit" type="submit" value="submit" class="btn">
 			        </div>
 			      </div>

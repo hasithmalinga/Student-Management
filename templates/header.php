@@ -11,16 +11,23 @@
     	.brand-text{
     		margin-left:10px;
     	}    	
-    	form{
+    	form, .table-container, .details-container{
     		max-width: 1000px;
     		margin: 20px auto;
     		padding: 20px;
     	}
-    	.add-student{
+    	.btn-student{
     		margin: 30px auto;
     	}
     	.table-delete{
     		color: red;
+    	}
+    	.table-view{
+    		color: black;
+    	}
+    	.header-text{
+    		margin: 20px auto;
+    		padding: 20px;
     	}
 
     </style>
