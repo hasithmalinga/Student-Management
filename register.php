@@ -161,7 +161,7 @@
 					"WHERE id = '$id'";
 			} else{
 				//insert sql query
-				$sql = "INSERTT INTO students(first_name,last_name,dob,enrollment_date,year,home_phone,mobile,email," .
+				$sql = "INSERT INTO students(first_name,last_name,dob,enrollment_date,year,home_phone,mobile,email," .
 					"contact_name_1,contact_phone_1,contact_name_2,contact_phone_2) VALUES('$first_name', '$last_name', '$dob', '$enrollment_date'," . 
 					" '$year', '$home_phone', '$mobile', '$email', '$contact_name_1', '$contact_phone_1', '$contact_name_2', '$contact_phone_2')";
 			}
@@ -233,6 +233,11 @@
 			          <input id="email" name="email" type="email" value="<?php echo htmlspecialchars($email); ?>" class="validate">
 			          <label for="email">Email</label>
 			          <div class="red-text"><?php echo $errors['email']; ?></div>
+			        </div>			        
+			      </div>
+			      <div class="row">			        
+			        <div class="input-field col s12">
+			          <input type="file" name="image">			          
 			        </div>
 			      </div>
 			      <div class="row">

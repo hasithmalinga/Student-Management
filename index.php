@@ -48,10 +48,10 @@
 		          <tr>
 		            <td><?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></td>
 		            <td><?php echo htmlspecialchars($student['year']); ?></td>
-		            <td><?php echo htmlspecialchars($student['email']); ?></td>
+		            <td><a href="mailto:<?php echo htmlspecialchars($student['email']); ?>"><?php echo htmlspecialchars($student['email']); ?></a></td>
 		            <td><a class="table-view" href="details.php?id=<?php echo $student['id']; ?>"><i class="small material-icons">visibility</i></a></td>
 		            <td><a class="table-edit" href="register.php?id=<?php echo $student['id']; ?>"><i class="small material-icons">edit</i></a></td>
-		            <td><a class="table-delete" href="#"><i class="small material-icons">delete</i></a></td>
+		            <td><a class="table-delete" onclick="delete_row(<?php echo $student['id']; ?>)"><i class="small material-icons">delete</i></a></td>
 		          </tr>
 
 	          <?php } ?>

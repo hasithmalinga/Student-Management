@@ -40,7 +40,8 @@
 
  			<div class="row center"> 				
 				<a class="waves-effect waves-light btn btn-student" href="register.php?id=<?php echo $student['id']; ?>"><i class="material-icons left">edit</i>Edit Student</a>
-				<a class="waves-effect waves-light btn btn-student" href="register.php"><i class="material-icons left">delete</i>Delete Student</a>					
+				<a class="waves-effect waves-light btn btn-student" href="#" onclick="delete_row(<?php echo $student['id']; ?>)">
+					<i class="material-icons left">delete</i>Delete Student</a>					
  			</div>
  			
  		<?php } else { ?>
