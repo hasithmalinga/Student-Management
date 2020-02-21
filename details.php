@@ -27,6 +27,9 @@
  		<?php if ($student) { ?>
  			
  			<h4><?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></h4>
+ 			<div class="ratio img-responsive img-circle">
+ 				<img src="images/<?php echo htmlspecialchars($student['image']) ?>">
+ 			</div>
  			<p><strong>Date of Birth: </strong> <?php echo htmlspecialchars($student['dob']); ?></p>
  			<p><strong>Date of Enrollment: </strong><?php echo htmlspecialchars($student['enrollment_date']); ?></p>
  			<p><strong>School Year: </strong><?php echo htmlspecialchars($student['year']); ?></p>

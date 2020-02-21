@@ -2,15 +2,17 @@
 
 	include('config/db_connection.php');
 
+	//variable declaration
 	$first_name = $last_name = $dob = $enrollment_date = $email = $home_phone = $mobile = '';
-	$contact_name_1 = $contact_phone_1 = $contact_name_2 = $contact_phone_2 = '';
+	$contact_name_1 = $contact_phone_1 = $contact_name_2 = $contact_phone_2 = $image = '';
 	$year = 0;
 
 	$id = 0;
 	
+	//errors list
 	$errors = array('first_name' => '', 'last_name' => '', 'email' => '',  'dob' => '', 'enrollment_date' => '', 'year' => '',
 				 'contact_name_1' => '', 'contact_name_2' => '', 'contact_phone_1' => '', 'contact_phone_2' => '',
-				 'home_phone' => '', 'mobile' => '');
+				 'home_phone' => '', 'mobile' => '', 'image' => '');
 	
 	if (isset($_GET['id'])) {
 		
@@ -37,6 +39,7 @@
 		$contact_name_1 = htmlspecialchars($student['contact_name_1']);
 		$contact_name_2 = htmlspecialchars($student['contact_name_2']);
 		$contact_phone_2 = htmlspecialchars($student['contact_phone_2']);
+		$image = 'images/' . htmlspecialchars($student['image']);
 
 	}
 
@@ -135,6 +138,19 @@
 			$contact_phone_2 = $_POST['contact_phone_2'];			
 		}
 
+		//check correct image file types
+		if (!empty($_FILES["image"]["name"])) {
+			// File upload path
+			$fileName = basename($_FILES["image"]["name"]);
+			$fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+			//allowed file types
+			$allowTypes = array('jpg','png','jpeg','gif');
+
+			if(!in_array($fileType, $allowTypes)){
+		        $errors['image'] = 'Only JPG, JPEG, PNG & GIF files are allowed';
+		    }  
+		}
+
 		if (!array_filter($errors)) {
 
 			$id = mysqli_real_escape_string($conn, $_POST['student_id']);
@@ -149,7 +165,13 @@
 			$contact_phone_1 = mysqli_real_escape_string($conn, $_POST['contact_phone_1']);
 			$contact_name_1 = mysqli_real_escape_string($conn, $_POST['contact_name_1']);
 			$contact_name_2 = mysqli_real_escape_string($conn, $_POST['contact_name_2']);
-			$contact_phone_2 = mysqli_real_escape_string($conn, $_POST['contact_phone_2']);
+			$contact_phone_2 = mysqli_real_escape_string($conn, $_POST['contact_phone_2']);			
+
+			if (!empty($_FILES["image"]["name"])) {
+				// File upload path				
+				$fileName = basename($_FILES["image"]["name"]);
+				$image = mysqli_real_escape_string($conn, $fileName);
+			}
 
 			$sql = '';
 
@@ -157,17 +179,21 @@
 				//update sql query
 				$sql = "UPDATE students SET first_name = '$first_name' ,last_name = '$last_name',dob = '$dob',enrollment_date = '$enrollment_date'," .
 					"year = '$year',home_phone = '$home_phone',mobile = '$mobile',email = '$email',contact_name_1 = '$contact_name_1'," .
-					"contact_phone_1 = '$contact_phone_1',contact_name_2 = '$contact_name_2',contact_phone_2 = '$contact_phone_2' " .
+					"contact_phone_1 = '$contact_phone_1',contact_name_2 = '$contact_name_2',contact_phone_2 = '$contact_phone_2',image = '$image' " .
 					"WHERE id = '$id'";
 			} else{
 				//insert sql query
 				$sql = "INSERT INTO students(first_name,last_name,dob,enrollment_date,year,home_phone,mobile,email," .
-					"contact_name_1,contact_phone_1,contact_name_2,contact_phone_2) VALUES('$first_name', '$last_name', '$dob', '$enrollment_date'," . 
-					" '$year', '$home_phone', '$mobile', '$email', '$contact_name_1', '$contact_phone_1', '$contact_name_2', '$contact_phone_2')";
+					"contact_name_1,contact_phone_1,contact_name_2,contact_phone_2,image) VALUES('$first_name', '$last_name', '$dob', '$enrollment_date'," . 
+					" '$year', '$home_phone', '$mobile', '$email', '$contact_name_1', '$contact_phone_1', '$contact_name_2', '$contact_phone_2', '$image')";
 			}
 			
 			//save to database
 			if(mysqli_query($conn, $sql)){
+				if (!empty($_FILES["image"]["name"])) {
+					//move uploaded file
+					move_uploaded_file($_FILES["image"]["tmp_name"], 'images/' . $_FILES["image"]["name"]);
+				}
 				//redirect to index
 				header('Location: index.php');
 			}else{
@@ -186,7 +212,7 @@
 	<section class="container grey-text register-form-container">
 		<h4 class="center header-text">Register New Student</h4>		
 			<div class="row">
-			    <form class="white col-s12 regiter-form" action="register.php" method="POST">
+			    <form class="white col-s12 regiter-form" action="register.php" method="POST" enctype="multipart/form-data">
 			      <div class="row">
 			        <div class="input-field col s6">
 			          <input id="first_name" name="first_name" type="text" value="<?php echo htmlspecialchars($first_name); ?>" class="validate">
